@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "name": "G0 empty experience controller",
+  "parent_id": null,
+  "hypothesis": "Frozen Wan generation with no admitted reusable experience is the search floor.",
+  "strategy": {
+    "fixture_score": 0.0,
+    "experience_version": "G0",
+    "diagnostic": "current GPT evidence review",
+    "repair": "no admitted repair policy",
+    "generation_budget": 2,
+    "selection": "frozen physical-first selector"
+  }
+}

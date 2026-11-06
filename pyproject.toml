@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "videogen-rsi"
+version = "0.1.0"
+description = "Evidence-grounded video repair and validated cross-task experience"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+gpu = ["diffusers==0.35.1", "peft==0.17.1", "transformers>=4.49,<5", "accelerate>=1.1", "imageio==2.37.0", "imageio-ffmpeg==0.6.0", "ftfy==6.3.1", "easydict==1.13", "opencv-python>=4.9", "sentencepiece"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
