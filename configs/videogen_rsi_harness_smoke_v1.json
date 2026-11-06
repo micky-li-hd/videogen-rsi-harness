@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "seed_candidate": "../data/videogen_rsi_harness_v1/seed_candidate.json",
+  "proposer": {
+    "command": ["{python}", "scripts/mock_videogen_harness_component.py", "propose", "--request", "{request}", "--output", "{output}", "--candidate-dir", "{candidate_dir}"],
+    "timeout_seconds": 60
+  },
+  "evaluator": {
+    "command": ["{python}", "scripts/mock_videogen_harness_component.py", "evaluate", "--candidate", "{candidate}", "--split", "{split}", "--manifest", "{split_manifest}", "--output", "{output}"],
+    "timeout_seconds": 60
+  },
+  "promotion": {
+    "primary_metric": "primary",
+    "min_delta": 0.0,
+    "quality_guards": [{"metric": "identity", "min_delta": 0.0}, {"metric": "naturalness", "min_delta": 0.0}],
+    "require_paired_admission": true
+  },
+  "splits": {
+    "development": {"manifest": "../data/videogen_rsi_harness_v1/development.json", "expected_units": 8},
+    "calibration": {"manifest": "../data/videogen_rsi_harness_v1/calibration.json", "expected_units": 8, "min_tasks": 4, "min_seeds": 2, "bootstrap_samples": 1000},
+    "admission": {"manifest": "../data/videogen_rsi_harness_v1/admission.json", "expected_units": 8, "min_tasks": 4, "min_seeds": 2, "bootstrap_samples": 1000},
+    "test": {"manifest": "../data/videogen_rsi_harness_v1/test.json", "expected_units": 8}
+  }
+}
