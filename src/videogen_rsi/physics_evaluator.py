@@ -275,9 +275,10 @@ def evaluate_hard_rule(trace: dict[str, Any], rule: dict[str, Any]) -> dict[str,
             available = [s for s in samples if target in s["signed_distances"]]
             if len(available) != len(samples):
                 return _result(rule, "unknown", "Contact evidence is incomplete during the friction interval.", [s["frame"] for s in available], {})
-            samples = [s for s in samples if abs(s["signed_distances"][target]) <= tolerance]
-            if len(samples) < 3:
-                return _result(rule, "fail", "The object is not continuously in contact during the declared friction interval.", [s["frame"] for s in available], {"contact_frames": len(samples), "observed_frames": len(available)})
+            contact_samples = [s for s in samples if abs(s["signed_distances"][target]) <= tolerance]
+            if len(contact_samples) != len(available):
+                return _result(rule, "fail", "The object is not continuously in contact during the declared friction interval.", [s["frame"] for s in available], {"contact_frames": len(contact_samples), "observed_frames": len(available)})
+            samples = contact_samples
         velocities = _velocities(samples, trace["fps"]); speeds = [(frame, _norm(value)) for frame, value in velocities]
         if len(speeds) < 2:
             return _result(rule, "unknown", "Insufficient velocities for sliding/friction.", [s["frame"] for s in samples], {})
@@ -295,7 +296,7 @@ def evaluate_hard_rule(trace: dict[str, Any], rule: dict[str, Any]) -> dict[str,
         def series(name): return [s["metrics"][name] for s in samples if name in s["metrics"]]
         if material == "rigid":
             areas, aspects, deformation = series("area"), series("aspect_ratio"), series("deformation")
-            if len(areas) != len(samples) or len(aspects) != len(samples): return _result(rule, "unknown", "Rigid-body area/aspect metrics are incomplete.", frames, {})
+            if len(areas) != len(samples) or len(aspects) != len(samples) or len(deformation) != len(samples): return _result(rule, "unknown", "Rigid-body area/aspect/deformation metrics are incomplete.", frames, {})
             def relspan(v): return (max(v)-min(v))/max(abs(median(v)), 1e-9)
             area_span, aspect_span = relspan(areas), relspan(aspects); deform = max(deformation) if deformation else 0.0
             passed = area_span <= float(p.get("max_area_rel_span", .15)) and aspect_span <= float(p.get("max_aspect_rel_span", .15)) and deform <= float(p.get("max_deformation", .15))
@@ -307,7 +308,7 @@ def evaluate_hard_rule(trace: dict[str, Any], rule: dict[str, Any]) -> dict[str,
             return _result(rule, "pass" if passed else "fail", "Soft-body deformation and recovery evaluated.", frames, {"peak_deformation": peak, "final_deformation": final})
         if material == "liquid":
             volume, components = series("volume_proxy"), series("components")
-            if len(volume) != len(samples) or not volume: return _result(rule, "unknown", "Liquid volume proxy is incomplete.", frames, {})
+            if len(volume) != len(samples) or len(components) != len(samples) or not volume: return _result(rule, "unknown", "Liquid volume/fragmentation metrics are incomplete.", frames, {})
             conservation = (max(volume)-min(volume))/max(abs(median(volume)), 1e-9); maximum_components = max(components) if components else 1
             passed = conservation <= float(p.get("max_volume_rel_span", .25)) and maximum_components <= int(p.get("max_components", 20))
             return _result(rule, "pass" if passed else "fail", "Liquid conservation and fragmentation evaluated.", frames, {"volume_rel_span": conservation, "max_components": maximum_components})
