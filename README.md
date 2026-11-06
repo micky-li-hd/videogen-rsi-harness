@@ -10,6 +10,9 @@ The harness provides:
 - an exact-candidate lock before held-out test access;
 - append-only hash-chained lifecycle records and fail-closed mutation checks;
 - a bounded Codex proposer adapter and a zero-cost offline lifecycle fixture.
+- fixed full-frame physical boundary rules for gravity, collisions, contact, friction, material behavior and event timing;
+- reference-assisted per-prompt rubrics for all 160 PhyGenBench items;
+- VLM/numerical arbitration with hard-rule vetoes and explicit abstention on missing measurements.
 
 The included mock evaluator produces synthetic scores solely to validate orchestration. It is not benchmark evidence. Formal results require a frozen adapter for Wan generation and an independent video evaluator.
 
@@ -36,6 +39,8 @@ PYTHONPATH=src python -m unittest tests.test_evolution_harness -v
 ```
 
 See [the architecture guide](docs/VIDEOGEN_RSI_HARNESS.md) and [the upstream similarity/novelty audit](docs/VIDEOHARNESS_RSI_SIMILARITY_AUDIT.md).
+
+The physics evaluator consumes an explicit trajectory trace; it does not infer exact geometry from pixels. Run it with `python -m videogen_rsi.physics_cli evaluate`. See `data/physics_evaluator_v1/README.md` for the schema and evidence boundary.
 
 ## Attribution
 
