@@ -46,3 +46,31 @@ The real evaluator command must be a frozen adapter that consumes `{candidate}`,
 - final evaluation: `phygen_two_scale.py` and the frozen PhyGenBench 40→120 manifests.
 
 The powerful VLM endpoint is deliberately outside the candidate artifact. Until that independent evaluator is qualified and bound into a production config, this harness can run development orchestration but must not unlock formal benchmark claims.
+
+## Fixed physics evaluator
+
+`videogen_rsi.physics_evaluator` adds a fixed, candidate-inaccessible physical boundary layer. It consumes externally extracted full-frame tracks and supports:
+
+- gravity direction, acceleration ranges and non-event velocity continuity;
+- collision momentum and restitution;
+- contact, penetration and unsupported-hover distances;
+- contact-conditioned friction, sliding and stopping;
+- rigid shape invariants, soft-body deformation/recovery and liquid volume/fragmentation limits;
+- ordered events and absolute event time windows;
+- full-frame track coverage;
+- reference-assisted rubrics for all 160 PhyGenBench prompts;
+- joint numeric/VLM checks in which a hard failure cannot be overridden by the VLM.
+
+Missing trajectories, masses, event anchors, signed distances or material metrics yield `unknown`; they never become passes. The evaluator does not claim to recover accurate geometry from pixels. A tracker or measurement adapter must produce the declared trace, and its provenance belongs in the frozen evaluation artifact.
+
+```bash
+PYTHONPATH=src python -m videogen_rsi.physics_cli phygen-rubric \
+  --catalog data/phygenbench/prompt-rubrics.json \
+  --id phygen_000000 --output rubric.json
+
+PYTHONPATH=src python -m videogen_rsi.physics_cli evaluate \
+  --trace trace.json --rubric rubric.json \
+  --vlm-verdict vlm.json --output physics_result.json
+```
+
+The bundled PhyGenBench catalog preserves source polarity and reference conflicts. It is a reference-assisted adaptation, not the official multi-model PhyGenEval metric. Reference descriptions specify expected behavior and are never treated as observations.
